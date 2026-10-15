@@ -1,23 +1,24 @@
 #!/bin/zsh
-# Builds Collect.app, installs it to /Applications and relaunches it.
+# Builds ClipList.app, installs it to /Applications and relaunches it.
 set -e
 cd "$(dirname "$0")"
-APP=Collect.app
+APP=ClipList.app
 rm -rf $APP
 mkdir -p $APP/Contents/MacOS $APP/Contents/Resources
 # Universal binary: Apple Silicon + Intel Macs.
 for arch in arm64 x86_64; do
-  swiftc -parse-as-library -swift-version 5 -O -target $arch-apple-macos13 main.swift -o /tmp/Collect-$arch
+  swiftc -parse-as-library -swift-version 5 -O -target $arch-apple-macos13 main.swift -o /tmp/ClipList-$arch
 done
-lipo -create /tmp/Collect-arm64 /tmp/Collect-x86_64 -output $APP/Contents/MacOS/Collect
-rm /tmp/Collect-arm64 /tmp/Collect-x86_64
+lipo -create /tmp/ClipList-arm64 /tmp/ClipList-x86_64 -output $APP/Contents/MacOS/ClipList
+rm /tmp/ClipList-arm64 /tmp/ClipList-x86_64
 cat > $APP/Contents/Info.plist <<PLIST
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0"><dict>
-  <key>CFBundleName</key><string>Collect</string>
+  <key>CFBundleName</key><string>Clip List</string>
+  <key>CFBundleDisplayName</key><string>Clip List</string>
   <key>CFBundleIdentifier</key><string>com.danielryan.collect</string>
-  <key>CFBundleExecutable</key><string>Collect</string>
+  <key>CFBundleExecutable</key><string>ClipList</string>
   <key>CFBundlePackageType</key><string>APPL</string>
   <key>CFBundleShortVersionString</key><string>1.0</string>
   <key>LSMinimumSystemVersion</key><string>13.0</string>
@@ -34,8 +35,10 @@ fi
 echo "Built $APP"
 
 # Install: keep only one copy on this Mac.
-pkill -x Collect || true
+pkill -x ClipList || true
+pkill -x Collect || true   # the app's old name
 sleep 1
+rm -rf /Applications/Collect.app
 rm -rf /Applications/$APP
 mv $APP /Applications/
 open /Applications/$APP
