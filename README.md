@@ -1,8 +1,10 @@
-# Clip List
+# Copy Collector
+
+*Formerly Clip List.*
 
 A tiny Mac menu bar app for copying several things while you read, then pasting them all at once. Turn it on, press ⌘C on each line you want to keep, and one ⌘V pastes the whole pile.
 
-<img src="docs/images/dropdown.png" alt="The Clip List dropdown, opened from the number-in-a-circle icon in the menu bar" width="375">
+<img src="docs/images/dropdown.png" alt="The Copy Collector dropdown, opened from the number-in-a-circle icon in the menu bar" width="375">
 
 Works on macOS 13 (Ventura) or newer, on both Apple Silicon and Intel Macs.
 
@@ -26,11 +28,11 @@ Click the gear in the dropdown:
 
 ## Permissions
 
-To notice ⌘V and ⌘C, Clip List needs **Input Monitoring**. It only looks for those two shortcuts. It doesn't record what you type and sends nothing anywhere. Without the permission, collecting still works, but the pile won't clear by itself.
+To notice ⌘V and ⌘C, Copy Collector needs **Input Monitoring**. It only looks for those two shortcuts. It doesn't record what you type and sends nothing anywhere. Without the permission, collecting still works, but the pile won't clear by itself.
 
-Turn it on in **System Settings → Privacy & Security → Input Monitoring**. The dropdown shows a reminder with an **Open Settings** button until you do. If macOS quits Clip List when you switch it on, open it again.
+Turn it on in **System Settings → Privacy & Security → Input Monitoring**. The dropdown shows a reminder with an **Open Settings** button until you do. If macOS quits Copy Collector when you switch it on, open it again.
 
-Clip List never collects passwords that password managers mark as private, and it ignores copied images and files.
+Copy Collector never collects passwords that password managers mark as private, and it ignores copied images and files.
 
 ## Build it yourself
 
@@ -42,7 +44,7 @@ You need the Xcode Command Line Tools (`xcode-select --install`).
 
 The whole app is one file: [`main.swift`](main.swift).
 
-Each build is signed ad-hoc unless your keychain has a code-signing certificate named in `build.sh`. With ad-hoc signing, macOS treats every rebuild as a new app, so you'll need to switch Clip List off and on again in Input Monitoring after rebuilding. A self-signed code-signing certificate avoids this.
+Each build is signed ad-hoc unless your keychain has a code-signing certificate named in `build.sh`. With ad-hoc signing, macOS treats every rebuild as a new app, so you'll need to switch Copy Collector off and on again in Input Monitoring after rebuilding. A self-signed code-signing certificate avoids this.
 
 ## License
 

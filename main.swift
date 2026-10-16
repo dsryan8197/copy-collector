@@ -4,7 +4,7 @@ import Carbon
 import ServiceManagement
 import Combine
 
-// Clip List: while collecting, every ⌘C is added to a pile and the whole pile is put back
+// Copy Collector: while collecting, every ⌘C is added to a pile and the whole pile is put back
 // on the clipboard, so one ⌘V pastes everything you've copied.
 
 enum Format: String, CaseIterable {
@@ -197,7 +197,7 @@ final class PasteWatcher {
         if Collector.shared.keysAllowed != (tap != nil) { Collector.shared.keysAllowed = tap != nil }
         UserDefaults.standard.set(tap != nil ? "running" : "needs permission", forKey: "keyWatcherStatus")
         if tap != nil || retry == nil {
-            NSLog("Clip List key watcher: %@", tap != nil ? "running" : "waiting for Input Monitoring permission")
+            NSLog("Copy Collector key watcher: %@", tap != nil ? "running" : "waiting for Input Monitoring permission")
         }
         if let t = tap {
             retry?.invalidate(); retry = nil
@@ -341,7 +341,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
         let b = item.button
         b?.image = circleIcon(c.collecting ? "\(c.items.count)" : "", filled: false)
         b?.appearsDisabled = !c.collecting
-        b?.toolTip = c.collecting ? "Clip List: \(c.items.count) ready to paste" : "Clip List: off"
+        b?.toolTip = c.collecting ? "Copy Collector: \(c.items.count) ready to paste" : "Copy Collector: off"
         panel?.title = "Collected · \(c.items.count)"
     }
 
@@ -515,7 +515,7 @@ struct MenuView: View {
                 HStack(alignment: .top, spacing: 8) {
                     Image(systemName: "exclamationmark.triangle").foregroundStyle(.orange)
                     VStack(alignment: .leading, spacing: 4) {
-                        Text("Allow Input Monitoring so pasting (or ⌘C on nothing) can clear the pile. Turn on Clip List in the list, then reopen this menu.")
+                        Text("Allow Input Monitoring so pasting (or ⌘C on nothing) can clear the pile. Turn on Copy Collector in the list, then reopen this menu.")
                             .font(.caption).fixedSize(horizontal: false, vertical: true)
                         Button("Open Settings") { PasteWatcher.openSettings() }.controlSize(.small)
                     }
