@@ -6,7 +6,30 @@ A tiny Mac menu bar app for copying several things while you read, then pasting 
 
 <img src="docs/images/dropdown.png" alt="The Copy Collector dropdown, opened from the number-in-a-circle icon in the menu bar" width="375">
 
-Works on macOS 13 (Ventura) or newer, on both Apple Silicon and Intel Macs.
+## ⬇️ [Download Copy Collector for Mac](https://github.com/hi-dad/copy-collector/releases/latest/download/CopyCollector.dmg)
+
+Needs macOS 13 (Ventura) or newer. Works on Apple Silicon and Intel Macs. This link always gets the newest version.
+
+## Install
+
+1. Open the downloaded **CopyCollector.dmg**.
+2. Drag **Copy Collector** onto the **Applications** folder in that window. (Don't open it from inside this window.)
+3. Open **Applications** and double-click **Copy Collector**.
+4. Look for the circle icon in the menu bar (top right of the screen), then turn on **Input Monitoring** (see [Permissions](#permissions)).
+
+### The first time you open it
+
+Your Mac will say it can't verify the app. That's normal for apps that aren't from the App Store, and you only need to do this once.
+
+1. Click **Done**. Don't click Move to Trash.
+2. Open **System Settings**, click **Privacy & Security**, scroll down, and click **Open Anyway** next to Copy Collector. Enter your Mac password if asked.
+3. Click **Open** on the last prompt. From now on Copy Collector opens normally.
+
+If you don't see **Open Anyway**, try opening Copy Collector once more, then go straight back to Privacy & Security. The button only appears for about an hour after the app is blocked.
+
+**To update:** download again and replace the copy in Applications. Your settings stay.
+
+**To uninstall:** circle icon → gear → **Quit**, then drag Copy Collector from Applications to the Trash.
 
 ## How to use it
 
@@ -40,6 +63,7 @@ You need the Xcode Command Line Tools (`xcode-select --install`).
 
 ```bash
 ./build.sh        # builds and installs to /Applications
+./build.sh dist   # also makes dist/CopyCollector.dmg
 ```
 
 The whole app is one file: [`main.swift`](main.swift).
