@@ -1,5 +1,7 @@
 # Copy Collector
 
+<img src="docs/images/icon.png" alt="Copy Collector app icon" width="128">
+
 *Formerly Clip List.*
 
 A tiny Mac menu bar app for copying several things while you read, then pasting them all at once. Turn it on, press ⌘C on each line you want to keep, and one ⌘V pastes the whole pile.
