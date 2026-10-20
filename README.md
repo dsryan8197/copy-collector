@@ -2,76 +2,39 @@
 
 <img src="docs/images/icon.png" alt="Copy Collector app icon" width="128">
 
-*Formerly Clip List.*
+**A tiny Mac menu bar app: copy several things while you read, then paste them all with one ⌘V.**
 
-A tiny Mac menu bar app for copying several things while you read, then pasting them all at once. Turn it on, press ⌘C on each line you want to keep, and one ⌘V pastes the whole pile.
+<img src="docs/images/demo.gif" alt="Copy Collector: copy three passages in a row, the list piles up, one Command-V pastes them all, and the list clears after the paste" width="720">
 
-<img src="docs/images/dropdown.png" alt="The Copy Collector dropdown, opened from the number-in-a-circle icon in the menu bar" width="375">
-
-## ⬇️ [Download Copy Collector for Mac](https://github.com/hi-dad/copy-collector/releases/latest/download/CopyCollector.dmg)
-
-Needs macOS 13 (Ventura) or newer. Works on Apple Silicon and Intel Macs. This link always gets the newest version.
+### [⬇️ Download Copy Collector](https://github.com/hi-dad/copy-collector/releases/latest/download/CopyCollector.dmg)
+Free · macOS 13 or newer · always the latest version
 
 ## Install
 
-1. Open the downloaded **CopyCollector.dmg**.
-2. Drag **Copy Collector** onto the **Applications** folder in that window. (Don't open it from inside this window.)
-3. Open **Applications** and double-click **Copy Collector**.
-4. Look for the circle icon in the menu bar (top right of the screen), then turn on **Input Monitoring** (see [Permissions](#permissions)).
-
-### The first time you open it
-
-Your Mac will say it can't verify the app. That's normal for apps that aren't from the App Store, and you only need to do this once.
-
-1. Click **Done**. Don't click Move to Trash.
-2. Open **System Settings**, click **Privacy & Security**, scroll down, and click **Open Anyway** next to Copy Collector. Enter your Mac password if asked.
-3. Click **Open** on the last prompt. From now on Copy Collector opens normally.
-
-If you don't see **Open Anyway**, try opening Copy Collector once more, then go straight back to Privacy & Security. The button only appears for about an hour after the app is blocked.
-
-**To update:** download again and replace the copy in Applications. Your settings stay.
-
-**To uninstall:** circle icon → gear → **Quit**, then drag Copy Collector from Applications to the Trash.
+1. Open **CopyCollector.dmg** and drag Copy Collector into **Applications**.
+2. Open it. When macOS says it can't verify the app, click **Done**, then go to **System Settings → Privacy & Security** and click **Open Anyway** (once).
+3. Turn on **Input Monitoring** for Copy Collector when asked, so it can tell when you paste.
 
 ## How to use it
 
-- Press **⌃⌥C** (Control + Option + C), or click the **circle icon** in the menu bar and flip the switch, to start collecting. The circle shows **0**.
-- **Copy as you read.** Each ⌘C adds to the pile and the number goes up.
-- **Paste with ⌘V.** Everything you collected pastes at once, with a blank line between each piece. The pile then resets to 0.
-- **⌘C with nothing selected** (for example, on an empty part of the page) clears the pile.
-- **Click the circle** to see the list. Copy or remove a single item, clear everything, or open the **floating panel** to keep the list on screen while you read.
-- An **empty grey circle** means collecting is off and ⌘C works normally.
+- Press **⌃⌥C** (or click the circle in the menu bar) to start collecting.
+- **⌘C** each thing you want. The number goes up.
+- **⌘V** pastes everything at once and starts a fresh pile.
+- Click the circle to see, copy or remove items, or change the format (plain, quote, numbered).
 
-### Settings
+It never collects passwords, and it ignores images and files. Nothing leaves your Mac.
 
-Click the gear in the dropdown:
+**Update:** download again and replace the app. **Remove:** circle → gear → **Quit**, then drag it to the Trash.
 
-- **Clear after pasting** and **⌘C with nothing selected clears**: both on by default.
-- **Format**: Plain (default), Quote (`> line`), or Numbered.
-- **Ignore repeats**: copying the same thing twice only adds it once.
-- **Pulse icon on copy**, **Show “Added” bubble**, and **Open at login**.
+<details><summary>Build it yourself</summary>
 
-## Permissions
-
-To notice ⌘V and ⌘C, Copy Collector needs **Input Monitoring**. It only looks for those two shortcuts. It doesn't record what you type and sends nothing anywhere. Without the permission, collecting still works, but the pile won't clear by itself.
-
-Turn it on in **System Settings → Privacy & Security → Input Monitoring**. The dropdown shows a reminder with an **Open Settings** button until you do. If macOS quits Copy Collector when you switch it on, open it again.
-
-Copy Collector never collects passwords that password managers mark as private, and it ignores copied images and files.
-
-## Build it yourself
-
-You need the Xcode Command Line Tools (`xcode-select --install`).
+Needs the Xcode Command Line Tools (`xcode-select --install`).
 
 ```bash
-./build.sh        # builds and installs to /Applications
+./build.sh        # builds, installs to Applications and opens it
 ./build.sh dist   # also makes dist/CopyCollector.dmg
 ```
 
-The whole app is one file: [`main.swift`](main.swift).
+</details>
 
-Each build is signed ad-hoc unless your keychain has a code-signing certificate named in `build.sh`. With ad-hoc signing, macOS treats every rebuild as a new app, so you'll need to switch Copy Collector off and on again in Input Monitoring after rebuilding. A self-signed code-signing certificate avoids this.
-
-## License
-
-[MIT](LICENSE)
+MIT License
