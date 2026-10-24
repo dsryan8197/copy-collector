@@ -573,6 +573,8 @@ struct MenuView: View {
                 Toggle("Open at login", isOn: $c.atLogin)
                 Text("2+ items clear by themselves after 5 minutes without a new copy.")
                     .font(.caption).foregroundStyle(.secondary)
+                Text("Only ⌘C adds to the pile. Dictation apps and other tools that borrow the clipboard are ignored.")
+                    .font(.caption).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
                 HStack {
                     Text("⌃⌥C turns collecting on/off").font(.caption).foregroundStyle(.secondary)
                     Spacer()

@@ -23,7 +23,7 @@ Free · macOS 13 or newer · always the latest version
 - With 2 or more waiting, a small list pops up so you know. If you forget, the pile clears itself after 5 minutes without a new copy.
 - Click the circle to see, copy or remove items, or change the format (plain, quote, numbered).
 
-It never collects passwords, and it ignores images and files. Nothing leaves your Mac.
+Only ⌘C adds to the pile, so it works alongside voice-to-text dictation apps that paste through the clipboard. It never collects passwords, and it ignores images and files. Nothing leaves your Mac.
 
 **Update:** download again and replace the app. **Remove:** circle → gear → **Quit**, then drag it to the Trash.
 
