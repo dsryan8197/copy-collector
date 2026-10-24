@@ -31,11 +31,23 @@ final class Collector: ObservableObject {
         didSet {
             d.set(collecting, forKey: "collecting")
             if collecting && !oldValue { lastSeen = pb.changeCount; writePile() }
-            onChange?()
+            onChange?(); onPanel?()
         }
     }
-    @Published var items: [String] { didSet { d.set(items, forKey: "items"); onChange?() } }
+    @Published var items: [String] {
+        didSet {
+            d.set(items, forKey: "items")
+            if items.count < 2 { autoPanelDismissed = false }
+            onChange?(); onPanel?()
+        }
+    }
     @Published var panelShown: Bool { didSet { d.set(panelShown, forKey: "panelShown"); onPanel?() } }
+    @Published var autoPanel: Bool { didSet { d.set(autoPanel, forKey: "autoPanel"); onPanel?() } }
+    var autoPanelDismissed = false      // closed by hand; stays closed until the pile drops below 2
+    /// The floating panel shows when switched on, or (optionally) while 2+ items are waiting.
+    var panelVisible: Bool {
+        panelShown || (autoPanel && !autoPanelDismissed && collecting && items.count >= 2)
+    }
     @Published var clearAfterPaste: Bool { didSet { d.set(clearAfterPaste, forKey: "clearAfterPaste"); onPasteSetting?() } }
     @Published var format: Format { didSet { d.set(format.rawValue, forKey: "format"); refreshPile() } }
     @Published var emptyCopyClears: Bool { didSet { d.set(emptyCopyClears, forKey: "emptyCopyClears"); onPasteSetting?() } }
@@ -55,14 +67,18 @@ final class Collector: ObservableObject {
     private var lastSeen: Int
     private var pileChange = -1        // changeCount of our last pile write
     private var lastCopyKey = Date.distantPast
+    private var lastAdded = Date()
+    let expireAfter: TimeInterval = 5 * 60   // a pile of 2+ left alone this long is forgotten: clear it
 
     init() {
-        d.register(defaults: ["collecting": false, "panelShown": false, "clearAfterPaste": true, "emptyCopyClears": true,
+        d.register(defaults: ["collecting": false, "panelShown": false, "autoPanel": true,
+                              "clearAfterPaste": true, "emptyCopyClears": true,
                               "format": Format.plain.rawValue, "ignoreRepeats": true,
                               "toast": false, "pulse": true])
         collecting = d.bool(forKey: "collecting")
         items = d.stringArray(forKey: "items") ?? []
         panelShown = d.bool(forKey: "panelShown")
+        autoPanel = d.bool(forKey: "autoPanel")
         clearAfterPaste = d.bool(forKey: "clearAfterPaste")
         emptyCopyClears = d.bool(forKey: "emptyCopyClears")
         format = Format(rawValue: d.string(forKey: "format") ?? "") ?? .plain
@@ -86,6 +102,7 @@ final class Collector: ObservableObject {
 
     /// Called on a timer: notices a new copy and adds it to the pile.
     func poll() {
+        if items.count >= 2 && Date().timeIntervalSince(lastAdded) > expireAfter { clearAll() }
         let c = pb.changeCount
         guard c != lastSeen else { return }
         lastSeen = c
@@ -101,6 +118,7 @@ final class Collector: ObservableObject {
         guard !s.isEmpty else { return }
         if ignoreRepeats && items.contains(s) { writePile(); return }
         items.append(s)
+        lastAdded = Date()
         writePile()
         onAdded?()
     }
@@ -139,9 +157,10 @@ final class Collector: ObservableObject {
         }
     }
 
-    /// ⌘V was pressed somewhere. If it pasted our pile, empty the pile.
+    /// ⌘V was pressed somewhere. If it pasted a pile of 2+, empty it. A single item stays, so it can be
+    /// pasted again and again like a normal clipboard (forms, the same message to several people).
     func didPaste() {
-        guard clearAfterPaste, collecting, !items.isEmpty, pb.changeCount == pileChange else { return }
+        guard clearAfterPaste, collecting, items.count >= 2, pb.changeCount == pileChange else { return }
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { self.items = [] }
     }
 }
@@ -363,7 +382,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     }
 
     func syncPanel() {
-        if c.panelShown {
+        if c.panelVisible {
             if panel == nil {
                 let p = NSPanel(contentRect: NSRect(x: 0, y: 0, width: 280, height: 380),
                                 styleMask: [.titled, .closable, .resizable, .utilityWindow, .nonactivatingPanel],
@@ -391,7 +410,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     }
 
     func windowWillClose(_ n: Notification) {
-        if (n.object as? NSPanel) === panel { c.panelShown = false }
+        guard (n.object as? NSPanel) === panel else { return }
+        if c.items.count >= 2 { c.autoPanelDismissed = true }   // don't pop straight back up
+        c.panelShown = false
     }
 
     func showToast() {
@@ -540,7 +561,8 @@ struct MenuView: View {
             }
             if showSettings {
                 Divider()
-                Toggle("Clear after pasting", isOn: $c.clearAfterPaste)
+                Toggle("Show panel when 2+ items are waiting", isOn: $c.autoPanel)
+                Toggle("Clear after pasting 2+ items", isOn: $c.clearAfterPaste)
                 Toggle("⌘C with nothing selected clears", isOn: $c.emptyCopyClears)
                 Picker("Format", selection: $c.format) {
                     ForEach(Format.allCases, id: \.self) { Text($0.label).tag($0) }
@@ -549,6 +571,8 @@ struct MenuView: View {
                 Toggle("Pulse icon on copy", isOn: $c.pulse)
                 Toggle("Show “Added” bubble", isOn: $c.toast)
                 Toggle("Open at login", isOn: $c.atLogin)
+                Text("2+ items clear by themselves after 5 minutes without a new copy.")
+                    .font(.caption).foregroundStyle(.secondary)
                 HStack {
                     Text("⌃⌥C turns collecting on/off").font(.caption).foregroundStyle(.secondary)
                     Spacer()
