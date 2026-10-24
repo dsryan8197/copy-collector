@@ -54,6 +54,7 @@ final class Collector: ObservableObject {
 
     private var lastSeen: Int
     private var pileChange = -1        // changeCount of our last pile write
+    private var lastCopyKey = Date.distantPast
 
     init() {
         d.register(defaults: ["collecting": false, "panelShown": false, "clearAfterPaste": true, "emptyCopyClears": true,
@@ -91,6 +92,11 @@ final class Collector: ObservableObject {
         guard collecting else { return }
         if (pb.types ?? []).contains(where: { skipTypes.contains($0.rawValue) }) { return }
         guard let raw = pb.string(forType: .string) else { return }   // images, files: leave alone
+        // Only a ⌘C adds to the pile, so apps that borrow the clipboard (dictation, password managers) are ignored.
+        if PasteWatcher.shared.isRunning && Date().timeIntervalSince(lastCopyKey) > 1 {
+            if raw == combined { pileChange = c }   // an app put our pile back after borrowing the clipboard
+            return
+        }
         let s = raw.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !s.isEmpty else { return }
         if ignoreRepeats && items.contains(s) { writePile(); return }
@@ -125,6 +131,7 @@ final class Collector: ObservableObject {
 
     /// ⌘C was pressed. If nothing new lands on the clipboard (nothing was selected), clear the pile.
     func didCopyKey() {
+        lastCopyKey = Date()
         guard emptyCopyClears, collecting, !items.isEmpty else { return }
         let before = pb.changeCount
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
@@ -170,6 +177,7 @@ final class PasteWatcher {
     static let shared = PasteWatcher()
     private var tap: CFMachPort?
     private var retry: Timer?
+    var isRunning: Bool { tap != nil }
 
     func update() {
         let c = Collector.shared
